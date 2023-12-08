@@ -2,6 +2,14 @@ services:
   database:
     image: mysql:8.2
     restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$DB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$DB_NAME
+      - MYSQL_USER=$DB_USER
+      - MYSQL_PASSWORD=$DB_USER_PASSWORD
+    volumes:
+      - db:/var/lib/mysql
   backend:
     depends_on:
       - database
