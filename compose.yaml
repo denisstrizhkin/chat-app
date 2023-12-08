@@ -1,0 +1,12 @@
+services:
+  database:
+    image: mysql:8.2
+    restart: unless-stopped
+  backend:
+    depends_on:
+      - database
+    build: ./backend
+    restart: unless-stopped
+
+volumes:
+  db:
