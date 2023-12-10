@@ -2,37 +2,80 @@
 
 import { validateBody, getDBConnection } from "../util/util.js";
 
-const createUser = (req, res) => {
+const TABLE_USERS = 'users';
+
+const USER_NAME = 'name';
+const USER_PASSWORD = 'password';
+const USER_ID = 'id';
+
+export const onCreateUser = async (req, res) => {
   try {
     const validation = validateBody(
-      req.body, { name: String, password: String }
+      req.body, { [USER_NAME]: 'string', [USER_PASSWORD]: 'string' }
     );
     if (!validation) {
       return res.status(400).json({ success: false, message: 'wrong request format' });
     }
 
-    const dbCon = getDBConnection();
-    dbCon.conncect(err => {
-      const sql = 'INSERT INTO users (name, password) VALUES ?';
-      const values = [
-        [ req.body.name, req.body.password ] 
-      ];
+    const { name, password } = req.body;
 
-      con.query(sql, [values], (err, result) => {
-        console.log(`Created user with ID: ${result.insertId}`);
-        return res.stats(200).json({ success: true, user: {
-          name: req.body.name, password: req.body.password, id: result.insertId
-        }});
-      })
-    });
-  } catch (error) {
-    return res.status(500).json({ success: false, error: error });
+    if (!name.match(/^[a-zA-Z0-9]{4,10}$/)) {
+      return res.status(400).json({ success: false, message: 'wrong username format' }); 
+    }
+
+    if (!password.match(/^[a-zA-Z0-9]{8,20}$/)) {
+      return res.status(400).json({ success: false, message: 'wrong password format' }); 
+    }
+
+    const dbCon = await getDBConnection();
+      
+    const sql = `INSERT INTO ${TABLE_USERS} (${USER_NAME}, ${USER_PASSWORD}) VALUES (?, ?)`;
+    const values = [ name, password ] ;
+
+    const [result, _] = await dbCon.execute(sql, values);
+
+    return res.status(200).json({ success: true, user: {
+      [USER_NAME]: name, [USER_PASSWORD]: password, [USER_ID]: result.insertId
+    }});
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
   }  
 };
 
-export default {
-  onGetAllUsers: async (req, res) => { },
-  onGetUserById: async (req, res) => { },
-  onCreateUser: async (req, res) => { createUser(req, res) },
-  onDeleteUserById: async (req, res) => { },
-}
+export const onGetAllUsers = async(req, res) => {
+  try {
+    const dbCon = await getDBConnection();
+
+    const sql = `SELECT * FROM ${TABLE_USERS}`;
+
+    const [result, _] = await dbCon.execute(sql);
+
+    return res.status(200).json({ success: true, users: result });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+export const onGetUserById = async(req, res) => {
+  try {
+    const dbCon = await getDBConnection();
+
+    const sql = `SELECT * FROM ${TABLE_USERS} WHERE ${USER_ID} = ?`;
+    const values = [req.params.id];
+
+    const [result, _] = await dbCon.execute(sql, values);
+
+    console.log(result.length);
+    if (result.length === 0) {
+      return res.status(400).json({ success: false, message: 'user does not exist' });
+    }
+
+    return res.status(200).json({ success: true, users: result });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+export const onDeleteUserById = async(req, res) => {
+  
+};

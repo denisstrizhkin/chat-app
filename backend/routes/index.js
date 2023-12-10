@@ -2,7 +2,7 @@
 
 import express from 'express';
 // controllers
-import users from '../controllers/user.js';
+import * as user from '../controllers/user.js';
 // middlewares
 import { encode } from '../middlewares/jwt.js';
 
