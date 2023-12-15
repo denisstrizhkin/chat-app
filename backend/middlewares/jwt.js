@@ -24,12 +24,13 @@ export const encode = async (req, res, next) => {
     const values = [ name ];
 
     const [result, _] = await dbCon.execute(sql, values);
+    const user = result[0];
 
-    if (result[USER_PASSWORD] !== password) {
+    if (user[USER_PASSWORD] !== password) {
       return res.status(400).json({ success: false, message: 'wrong password' });
     }
 
-    const payload = { [USER_ID]: result[USER_ID], [USER_NAME]: result[USER_NAME] };   
+    const payload = { [USER_ID]: user[USER_ID], [USER_NAME]: user[USER_NAME] };   
     const authToken = jwt.sign(payload, SECRET_KEY);
 
     req.authToken = authToken;
@@ -44,6 +45,7 @@ export const decode = (req, res, next) => {
     return res.status(400).json({ success: false, message: 'No access token provided' });
   }
   const accessToken = req.headers.authorization.split(' ')[1];
+
   try {
     const decoded = jwt.verify(accessToken, SECRET_KEY);
     req[USER_ID] = decoded[USER_ID];

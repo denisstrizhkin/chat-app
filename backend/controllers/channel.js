@@ -20,7 +20,8 @@ export const onCreateChannel = async (req, res) => {
 
     const { name } = req.body;
 
-    const { user_id, user_name } = req;
+    const user_id = req[USER_ID];
+    const user_name = req[USER_NAME];
 
     if (!name.match(/^[a-zA-Z0-9\s]{4,20}$/)) {
       return res.status(400).json({ success: false, message: 'wrong name format' }); 
@@ -41,4 +42,11 @@ export const onCreateChannel = async (req, res) => {
     return res.status(500).json({ success: false, error: err.message });
   }  
 };
+
+export const onGetUserChannels = async (req, res) => {};
+export const onGetChannelMessages = async (req, res) => {};
+export const onJoinChannel = async (req, res) => {};
+export const onCreateMessage = async (req, res) => {};
+export const onLeaveChannel = async (req, res) => {};
+export const onDeleteChannel = async (req, res) => {};
 

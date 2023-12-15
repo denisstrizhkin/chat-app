@@ -2,7 +2,7 @@
 
 import express from 'express';
 
-import * as channelController from '../controllers/channel';
+import * as channelController from '../controllers/channel.js';
 
 const router = express.Router();
 

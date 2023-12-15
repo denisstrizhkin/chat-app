@@ -9,7 +9,7 @@ import cors from "cors";
 import channelRouter from './routes/channel.js';
 
 // controllers
-import user from './controllers/user.js';
+import * as user from './controllers/user.js';
 
 // middlewares
 import { encode, decode } from './middlewares/jwt.js';
