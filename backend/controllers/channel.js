@@ -9,70 +9,36 @@ import {
     MESSAGE_DATE, MESSAGE_CHANNEL
 } from "../constants.js";
 
-export const onCreate = async (req, res) => {
+export const onCreateChannel = async (req, res) => {
   try {
     const validation = validateBody(
-      req.body, { [USER_NAME]: 'string', [USER_PASSWORD]: 'string' }
+      req.body, { [CHANNEL_NAME]: 'string' }
     );
     if (!validation) {
       return res.status(400).json({ success: false, message: 'wrong request format' });
     }
 
-    const { name, password } = req.body;
+    const { name } = req.body;
 
-    if (!name.match(/^[a-zA-Z0-9]{4,10}$/)) {
-      return res.status(400).json({ success: false, message: 'wrong username format' }); 
-    }
+    const { user_id, user_name } = req;
 
-    if (!password.match(/^[a-zA-Z0-9]{8,20}$/)) {
-      return res.status(400).json({ success: false, message: 'wrong password format' }); 
+    if (!name.match(/^[a-zA-Z0-9\s]{4,20}$/)) {
+      return res.status(400).json({ success: false, message: 'wrong name format' }); 
     }
 
     const dbCon = await getDBConnection();
       
-    const sql = `INSERT INTO ${TABLE_USERS} (${USER_NAME}, ${USER_PASSWORD}) VALUES (?, ?)`;
-    const values = [ name, password ] ;
+    const sql = `INSERT INTO ${TABLE_CHANNELS}
+      (${CHANNEL_NAME}, ${CHANNEL_CREATOR}) VALUES (?, ?)`;
+    const values = [ name, user_id ] ;
 
     const [result, _] = await dbCon.execute(sql, values);
 
-    return res.status(200).json({ success: true, user: {
-      [USER_NAME]: name, [USER_PASSWORD]: password, [USER_ID]: result.insertId
+    return res.status(200).json({ success: true, channel: {
+      [CHANNEL_NAME]: name, [CHANNEL_CREATOR]: user_id, [CHANNEL_ID]: result.insertId
     }});
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
   }  
 };
 
-// export const onGetAllUsers = async(req, res) => {
-//   try {
-//     const dbCon = await getDBConnection();
-
-//     const sql = `SELECT * FROM ${TABLE_USERS}`;
-
-//     const [result, _] = await dbCon.execute(sql);
-
-//     return res.status(200).json({ success: true, users: result });
-//   } catch (err) {
-//     return res.status(500).json({ success: false, error: err.message });
-//   }
-// };
-
-// export const onGetUserById = async(req, res) => {
-//   try {
-//     const dbCon = await getDBConnection();
-
-//     const sql = `SELECT * FROM ${TABLE_USERS} WHERE ${USER_ID} = ?`;
-//     const values = [req.params.id];
-
-//     const [result, _] = await dbCon.execute(sql, values);
-
-//     console.log(result.length);
-//     if (result.length === 0) {
-//       return res.status(400).json({ success: false, message: 'user does not exist' });
-//     }
-
-//     return res.status(200).json({ success: true, users: result });
-//   } catch (err) {
-//     return res.status(500).json({ success: false, error: err.message });
-//   }
-// };
