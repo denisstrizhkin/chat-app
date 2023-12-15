@@ -16,7 +16,8 @@ export const encode = async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'wrong request format' });
     }
 
-    const { name, password } = req.body;
+    const name = req.body[USER_NAME];
+    const password = req.body[USER_PASSWORD];
 
     const dbCon = await getDBConnection();
  
@@ -36,7 +37,7 @@ export const encode = async (req, res, next) => {
     req.authToken = authToken;
     next();
   } catch (error) {
-    return res.status(400).json({ success: false, error: error.error });
+    return res.status(400).json({ success: false, error: error.message });
   }
 }
 
