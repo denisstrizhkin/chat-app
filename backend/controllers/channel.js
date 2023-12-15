@@ -96,7 +96,19 @@ export const onGetChannelMessages = async (req, res) => {
 
     const [result, _] = await dbCon.execute(sql, values);
 
-    return res.status(200).json({ success: true, messages: result });
+    const getAuthorName = async msg => {
+      const sql = `SELECT ${USER_NAME} FROM ${TABLE_USERS}
+        WHERE ${USER_ID} = ?`
+      const values = [ msg[MESSAGE_AUTHOR] ]
+      const [result, _] = await dbCon.execute(sql, values);
+
+      msg[MESSAGE_AUTHOR] = result[0][USER_NAME];
+      return msg;
+    }
+
+    const messages = await Promise.all(result.map(msg => getAuthorName(msg)));
+
+    return res.status(200).json({ success: true, messages: messages });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
   }  
