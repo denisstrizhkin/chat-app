@@ -6,6 +6,7 @@ import logger from "morgan";
 import cors from "cors";
 
 // routes
+import channelRouter from './routes/channel.js';
 
 // controllers
 import user from './controllers/user.js';
@@ -28,7 +29,7 @@ app.post('/login', encode, (req, res, next) => {
 });
 app.post('/register', user.onRegister)
 
-app.use("/channel", channelRouter);
+app.use("/channels", decode, channelRouter);
 
 /** catch 404 and forward to error handler */
 app.use('*', (req, res) => {

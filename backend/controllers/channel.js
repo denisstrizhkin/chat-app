@@ -2,9 +2,14 @@
 
 import { validateBody, getDBConnection } from "../util/util.js";
 
-import { TABLE_USERS, USER_NAME, USER_PASSWORD, USER_ID } from "../constants.js";
+import { 
+  TABLE_USERS, USER_NAME, USER_ID,
+  TABLE_CHANNELS, CHANNEL_ID, CHANNEL_NAME, CHANNEL_CREATOR,
+  TABLE_MESSAGES, MESSAGE_ID, MESSAGE_NAME, MESSAGE_AUTHOR,
+    MESSAGE_DATE, MESSAGE_CHANNEL
+} from "../constants.js";
 
-export const onRegister = async (req, res) => {
+export const onCreate = async (req, res) => {
   try {
     const validation = validateBody(
       req.body, { [USER_NAME]: 'string', [USER_PASSWORD]: 'string' }
