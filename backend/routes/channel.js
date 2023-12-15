@@ -1,12 +1,14 @@
 "use strict";
 
 import express from 'express';
-// controllers
-import deleteController from '../controllers/delete.js';
+
+
 
 const router = express.Router();
 
 router
+  .get('/')
+
   .delete('/room/:roomId', deleteController.deleteRoomById)
   .delete('/message/:messageId', deleteController.deleteMessageById)
 

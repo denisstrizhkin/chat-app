@@ -4,13 +4,14 @@ import http from "http";
 import express from "express";
 import logger from "morgan";
 import cors from "cors";
+
 // routes
-import indexRouter from "./routes/index.js";
-import userRouter from "./routes/user.js";
-import chatRoomRouter from "./routes/chatRoom.js";
-import deleteRouter from "./routes/delete.js";
+
+// controllers
+import user from './controllers/user.js';
+
 // middlewares
-import { decode } from './middlewares/jwt.js'
+import { encode, decode } from './middlewares/jwt.js';
 
 const app = express();
 
@@ -22,10 +23,12 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/", indexRouter);
-app.use("/users", userRouter);
-app.use("/room", decode, chatRoomRouter);
-app.use("/delete", deleteRouter);
+app.post('/login', encode, (req, res, next) => {
+  return res.status(200).json({ success: true, authorization: req.authToken })
+});
+app.post('/register', user.onRegister)
+
+app.use("/channel", channelRouter);
 
 /** catch 404 and forward to error handler */
 app.use('*', (req, res) => {

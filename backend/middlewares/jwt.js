@@ -2,8 +2,54 @@
 
 import jwt from 'jsonwebtoken';
 
-export const decode = (req, res, next) => {}
+import { validateBody, getDBConnection } from "../util/util.js";
+import { TABLE_USERS, USER_NAME, USER_PASSWORD, USER_ID } from "../constants.js";
 
-export const encode = async (req, res, next) => {}
+const SECRET_KEY = process.env.SECRET;
 
+export const encode = async (req, res, next) => {
+  try {
+    const validation = validateBody(
+      req.body, { [USER_NAME]: 'string', [USER_PASSWORD]: 'string' }
+    );
+    if (!validation) {
+      return res.status(400).json({ success: false, message: 'wrong request format' });
+    }
 
+    const { name, password } = req.body;
+
+    const dbCon = await getDBConnection();
+ 
+    const sql = `SELECT * FROM ${TABLE_USERS} WHERE ${USER_NAME} = ?`;
+    const values = [ name ];
+
+    const [result, _] = await dbCon.execute(sql, values);
+
+    if (result[USER_PASSWORD] !== password) {
+      return res.status(400).json({ success: false, message: 'wrong password' });
+    }
+
+    const payload = { [USER_ID]: result[USER_ID], [USER_NAME]: result[USER_NAME] };   
+    const authToken = jwt.sign(payload, SECRET_KEY);
+
+    req.authToken = authToken;
+    next();
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.error });
+  }
+}
+
+export const decode = (req, res, next) => {
+  if (!req.headers['authorization']) {
+    return res.status(400).json({ success: false, message: 'No access token provided' });
+  }
+  const accessToken = req.headers.authorization.split(' ')[1];
+  try {
+    const decoded = jwt.verify(accessToken, SECRET_KEY);
+    req[USER_ID] = decoded[USER_ID];
+    req[USER_NAME] = decoded[USER_NAME];
+    return next();
+  } catch (error) {
+    return res.status(401).json({ success: false, message: error.message });
+  }
+}
