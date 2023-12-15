@@ -13,6 +13,10 @@ export const CHANNEL_CREATOR = 'created_by';
 
 export const MESSAGE_ID = 'id';
 export const MESSAGE_NAME = 'name';
+export const MESSAGE_BODY = 'body';
 export const MESSAGE_CHANNEL = 'channel';
 export const MESSAGE_AUTHOR = 'sent_by';
 export const MESSAGE_DATE = 'date';
+
+export const CHANNEL_USERS_CHANNEL = 'channel';
+export const CHANNEL_USERS_USER = 'user';

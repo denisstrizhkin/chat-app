@@ -8,11 +8,12 @@ const router = express.Router();
 
 router
   .get('/', channelController.onGetUserChannels)
-  .get('/messages', channelController.onGetChannelMessages)
+  .get('/messages/:id', channelController.onGetChannelMessages)
   .post('/', channelController.onCreateChannel)
   .post('/join/:id', channelController.onJoinChannel)
   .post('/messages', channelController.onCreateMessage)
-  .delete('/leave/:id', channelController.onLeaveChannel)
-  .delete('/', channelController.onDeleteChannel)
+
+  // .delete('/leave/:id', channelController.onLeaveChannel)
+  // .delete('/', channelController.onDeleteChannel)
 
 export default router;
