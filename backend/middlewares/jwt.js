@@ -13,7 +13,7 @@ export const encode = async (req, res, next) => {
       req.body, { [USER_NAME]: 'string', [USER_PASSWORD]: 'string' }
     );
     if (!validation) {
-      return res.status(400).json({ success: false, message: 'wrong request format' });
+      return res.status(400).json({ success: false, error: 'wrong request format' });
     }
 
     const { name, password } = req.body;
@@ -27,7 +27,7 @@ export const encode = async (req, res, next) => {
     const user = result[0];
 
     if (user[USER_PASSWORD] !== password) {
-      return res.status(400).json({ success: false, message: 'wrong password' });
+      return res.status(400).json({ success: false, error: 'wrong password' });
     }
 
     const payload = { [USER_ID]: user[USER_ID], [USER_NAME]: user[USER_NAME] };   
@@ -36,13 +36,13 @@ export const encode = async (req, res, next) => {
     req.authToken = authToken;
     next();
   } catch (error) {
-    return res.status(400).json({ success: false, message: error.error });
+    return res.status(400).json({ success: false, error: error.error });
   }
 }
 
 export const decode = (req, res, next) => {
   if (!req.headers['authorization']) {
-    return res.status(400).json({ success: false, message: 'No access token provided' });
+    return res.status(400).json({ success: false, error: 'No access token provided' });
   }
   const accessToken = req.headers.authorization.split(' ')[1];
 
@@ -52,6 +52,6 @@ export const decode = (req, res, next) => {
     req[USER_NAME] = decoded[USER_NAME];
     return next();
   } catch (error) {
-    return res.status(401).json({ success: false, message: error.message });
+    return res.status(401).json({ success: false, error: error.message });
   }
 }

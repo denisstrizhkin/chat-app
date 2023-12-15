@@ -10,17 +10,17 @@ export const onRegister = async (req, res) => {
       req.body, { [USER_NAME]: 'string', [USER_PASSWORD]: 'string' }
     );
     if (!validation) {
-      return res.status(400).json({ success: false, message: 'wrong request format' });
+      return res.status(400).json({ success: false, error: 'wrong request format' });
     }
 
     const { name, password } = req.body;
 
     if (!name.match(/^[a-zA-Z0-9]{4,10}$/)) {
-      return res.status(400).json({ success: false, message: 'wrong username format' }); 
+      return res.status(400).json({ success: false, error: 'wrong username format' }); 
     }
 
     if (!password.match(/^[a-zA-Z0-9]{8,20}$/)) {
-      return res.status(400).json({ success: false, message: 'wrong password format' }); 
+      return res.status(400).json({ success: false, error: 'wrong password format' }); 
     }
 
     const dbCon = await getDBConnection();

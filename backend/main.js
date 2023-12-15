@@ -35,7 +35,7 @@ app.use("/channels", decode, channelRouter);
 app.use('*', (req, res) => {
   return res.status(404).json({
     success: false,
-    message: 'API endpoint doesnt exist'
+    error: 'API endpoint doesnt exist'
   })
 });
 

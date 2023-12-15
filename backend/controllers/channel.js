@@ -16,7 +16,7 @@ export const onCreateChannel = async (req, res) => {
       req.body, { [CHANNEL_NAME]: 'string' }
     );
     if (!validation) {
-      return res.status(400).json({ success: false, message: 'wrong request format' });
+      return res.status(400).json({ success: false, error: 'wrong request format' });
     }
 
     const { name } = req.body;
@@ -25,7 +25,7 @@ export const onCreateChannel = async (req, res) => {
     const user_name = req[USER_NAME];
 
     if (!name.match(/^[a-zA-Z0-9\s]{4,20}$/)) {
-      return res.status(400).json({ success: false, message: 'wrong name format' }); 
+      return res.status(400).json({ success: false, error: 'wrong name format' }); 
     }
 
     const dbCon = await getDBConnection();
@@ -127,7 +127,7 @@ export const onCreateMessage = async (req, res) => {
       req.body, { [CHANNEL_ID]: 'string', [MESSAGE_BODY]: 'string' }
     );
     if (!validation) {
-      return res.status(400).json({ success: false, message: 'wrong request format' });
+      return res.status(400).json({ success: false, error: 'wrong request format' });
     }
 
     const channel_id = req.body[CHANNEL_ID];
@@ -144,7 +144,7 @@ export const onCreateMessage = async (req, res) => {
 
     if (body.length > 500) {
       return res.status(400).json(
-        { success: false, message: 'max message length is 500' }
+        { success: false, error: 'max message length is 500' }
       );
     }
 
