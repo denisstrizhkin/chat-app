@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
     env_file: ./.env
     ports:
-      - $NODE_PORT:3000
+      - 3000:$NODE_PORT
     environment:
       - PORT=$NODE_PORT
     volumes:
